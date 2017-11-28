@@ -85,9 +85,23 @@ def scarica(utente, clientSock):
         contenuto = contenuto.encode()
         clientSock.send(bytes(contenuto))
     else:
-        msg = "Errore durante il salvataggio: il file non esiste sul server."
-        messaggio_b = str.encode(msg)
-        clientSock.send(bytes(messaggio_b))
+        clientSock.close()
+        print("Baluzzilla client attempted an irregular operation. Aborting...")
+
+
+def rimuovi(utente, clientSock):
+    filename = clientSock.recv(1024)
+    print(filename)
+    filename = filename.decode("utf-8")
+    scarica = File.query.filter_by(filename=filename).join(Utente).filter_by(uid=utente.uid).first()
+    print(scarica)
+    if scarica:
+        os.remove(filename)
+        db.session.delete(scarica)
+        db.session.commit()
+    else:
+        clientSock.close()
+        print("Baluzzilla client attempted an irregular operation. Aborting...")
 
 
 def serverhandler(clientSock):
@@ -121,6 +135,8 @@ def serverhandler(clientSock):
                 carica(utente, clientSock)
             elif command == "download":
                 scarica(utente, clientSock)
+            elif command == "remove":
+                rimuovi(utente, clientSock)
             elif command == "quit":
                 print("Baluzzilla client disconnecting...")
                 clientSock.close()

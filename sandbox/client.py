@@ -25,7 +25,7 @@ if __name__ == "__main__":
         sender(username, s)
         password = input("Immettere password ->")
         sender(password, s)
-        print("Connessione ultimata. Usa list, upload e download per usare il server.")
+        print("Connessione ultimata. Usa list, upload ,download e remove per interagire con il server.")
         while True:
             comando = input("Comando? ")
             sender(comando, s)
@@ -49,6 +49,17 @@ if __name__ == "__main__":
                 scaricato.write(oggetto.decode("utf-8"))
                 scaricato.close()
                 print("Scaricato con successo.")
+            elif comando == "remove":
+                filename = input("Nome del file? ")
+                if filename == "server.py" or "db.sqlite":
+                    print("Abbiamo a che fare con un volpone, eh?")
+                    s.close()
+                    quit()
+                sender(filename, s)
+                print("Rimosso con successo")
+            elif comando == "quit":
+                s.close()
+                break
     elif str(modalita) == "register":
         sender(modalita, s)
         username = input("Immettere username ->")
